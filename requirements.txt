@@ -1,0 +1,6 @@
+fastapi
+pydantic-settings
+uvicorn[standard]
+chromadb
+openai
+pypdf
