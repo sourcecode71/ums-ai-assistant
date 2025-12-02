@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from core.config import settings
+from apps.scholarship.routes import router as scholarship_router
 
 app = FastAPI(
     title="UMS AI Assistant",
@@ -17,6 +18,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include routers
+app.include_router(scholarship_router, prefix="/scholarship", tags=["Scholarship"])
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -37,7 +37,6 @@ class LLMService:
         elif self.provider == "google":
             return await self._google_generate(prompt, **kwargs)
         
-
     async def _openai_generate(self, prompt: str, **kwargs) -> str:
         response = self.client.chat.completions.create(
             model=kwargs.get("model", "gpt-4"),
