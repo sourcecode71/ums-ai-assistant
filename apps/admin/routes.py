@@ -17,8 +17,8 @@ async def run_ingestion():
         # Process Financial Aid PDFs
         financial_aid_path = "./data/raw_documents/scholarships/financial_aid_ug.pdf"
         if os.path.exists(financial_aid_path):
-            await ingestion_service.process_financial_aid_pdf(financial_aid_path)
-        
+            await ingestion_service.ingest_scholarship_document(financial_aid_path, "financial_aid_ug")
+
         # Add other documents as needed
         print("✅ Ingestion completed!")
     except Exception as e:
