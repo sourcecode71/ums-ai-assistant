@@ -4,3 +4,5 @@ uvicorn[standard]
 chromadb
 openai
 pypdf
+PyPDF2
+PyMuPDF

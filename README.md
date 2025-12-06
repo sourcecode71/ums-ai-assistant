@@ -79,7 +79,56 @@ This project allows you to upload these PDF documents, convert them into searcha
 
 ## 🧠 Environment Setup
 
-### 1. Clone the repository
+### Option 1: Using Docker (Recommended)
+If you prefer to use Docker, clone the repository and skip to the Docker running instructions below.
+
+### Option 2: Local Setup
+
+#### 1. Clone the repository
 ```bash
 git clone https://github.com/yourusername/ums-ai-assistant.git
 cd ums-ai-assistant
+```
+
+#### 2. Install dependencies
+```bash
+pip install -r requirements.txt
+```
+
+#### 3. Set up environment variables
+Copy the `.env` file and configure your API keys and settings.
+
+---
+
+## 🚀 Running the Application
+
+### Using Docker (Recommended)
+To run the application using Docker Compose:
+```bash
+docker-compose up --build
+```
+
+Or build and run with Docker directly:
+```bash
+docker build -t ums-ai-assistant .
+docker run -p 8000:8000 ums-ai-assistant
+```
+
+### Local Development
+To run the application in development mode with auto-reload:
+```bash
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+### Local Production
+For production deployment with multiple workers:
+```bash
+uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
+```
+
+### 🔍 Access Swagger UI
+Once the application is running, you can access the API documentation:
+
+- **Interactive Swagger UI (Recommended)**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Alternative Swagger UI**: [http://localhost:8000/redoc](http://localhost:8000/redoc)
+- **OpenAPI JSON Specification**: [http://localhost:8000/openapi.json](http://localhost:8000/openapi.json)
