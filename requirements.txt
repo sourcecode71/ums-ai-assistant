@@ -6,3 +6,4 @@ openai
 pypdf
 PyPDF2
 PyMuPDF
+sentence-transformers

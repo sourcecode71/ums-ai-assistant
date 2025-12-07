@@ -21,6 +21,8 @@ class ScholarshipService:
             limit=5
         )
         
+        print(f"   📖 Search Results {search_results}")
+        
         # Build context from search results
         context = "\n\n".join([result.chunk.content for result in search_results])
         

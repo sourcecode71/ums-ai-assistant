@@ -9,6 +9,7 @@ scholarship_service = ScholarshipService()
 @router.post("/ask", response_model=ChatResponse, description="Ask a question about scholarships and get AI-powered answers with sources")
 async def ask_scholarship_question(request: ChatRequest):
     try:
+        print(f"   ❓ Question Received: {request.question}")
         response = await scholarship_service.ask_question(request.question)
         return ChatResponse(
             answer=response.answer,

@@ -20,7 +20,8 @@ class Settings(BaseSettings):
     PINECONE_ENVIRONMENT: Optional[str] = None
     
     # Embeddings
-    EMBEDDING_MODEL: str = "text-embedding-3-small"
+    EMBEDDING_PROVIDER: str = "local"  # "local" (FREE) or "openai" ($$$)
+    EMBEDDING_MODEL: str = "all-MiniLM-L6-v2"  # FREE local model or OpenAI model
     
     # Security
     SECRET_KEY: str
