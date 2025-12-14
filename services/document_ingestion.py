@@ -167,14 +167,11 @@ class DocumentIngestionService:
             print(f"   ❌ Error reading DOCX file: {e}")
         return []
 
-    def _split_text_into_chunks(self, text: str, chunk_size: int = 1000, overlap: int = 100) -> List[str]:
+    def _split_text_into_chunks(self, text: str, chunk_size: int = 150, overlap: int = 30) -> List[str]:
         """
-        Split text into manageable chunks with overlap
-        
-        Args:
-            text: Text to split
-            chunk_size: Maximum words per chunk
-            overlap: Words to overlap between chunks for context
+        OPTIMAL settings for scholarship Q&A:
+        - chunk_size=150: About 1/3 of a page - perfect for precise answers
+        - overlap=30: Ensures context isn't lost between chunks
         """
         if not text or not text.strip():
             return []

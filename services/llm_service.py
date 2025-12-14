@@ -10,7 +10,10 @@ class LLMService:
         if self.provider == "openai":
             try:
                 from openai import OpenAI
-                self.client = OpenAI(api_key=settings.OPENAI_API_KEY)
+                self.client = OpenAI(
+                    api_key="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",
+                    base_url="https://openrouter.ai/api/v1"
+                )
             except ImportError:
                 raise ImportError("OpenAI library not installed. Install with: pip install openai")
         elif self.provider == "anthropic":
@@ -39,7 +42,7 @@ class LLMService:
         
     async def _openai_generate(self, prompt: str, **kwargs) -> str:
         response = self.client.chat.completions.create(
-            model=kwargs.get("model", "gpt-4"),
+            model=kwargs.get("model", "nex-agi/deepseek-v3.1-nex-n1:free"),
             messages=[
                 {"role": "system", "content": "You are a helpful university assistant."},
                 {"role": "user", "content": f"Question: {prompt}"}
