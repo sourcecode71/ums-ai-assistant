@@ -11,8 +11,8 @@ class LLMService:
             try:
                 from openai import OpenAI
                 self.client = OpenAI(
-                    api_key="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",
-                    base_url="https://openrouter.ai/api/v1"
+                    api_key=settings.OPENAI_API_KEY,
+                    base_url=settings.OPENAI_BASE_URL
                 )
             except ImportError:
                 raise ImportError("OpenAI library not installed. Install with: pip install openai")

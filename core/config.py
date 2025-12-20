@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     
     # LLM Configuration
     OPENAI_API_KEY: Optional[str] = ""
+    OPENAI_BASE_URL: str
     ANTHROPIC_API_KEY: Optional[str] = None
     GOOGLE_API_KEY: Optional[str] = None
     LLM_PROVIDER: str = "openai"  # openai, anthropic, google
