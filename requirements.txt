@@ -7,3 +7,7 @@ pypdf
 PyPDF2
 PyMuPDF
 sentence-transformers
+langchain-core
+langchain-openai
+langchain-anthropic
+langchain-google-genai

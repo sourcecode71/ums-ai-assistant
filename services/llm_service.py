@@ -1,3 +1,4 @@
+from langchain_core.messages import HumanMessage, SystemMessage
 from core.config import settings
 
 
@@ -9,26 +10,38 @@ class LLMService:
     def setup_client(self):
         if self.provider == "openai":
             try:
-                from openai import OpenAI
-                self.client = OpenAI(
+                from langchain_openai import ChatOpenAI
+                self.client = ChatOpenAI(
                     api_key=settings.OPENAI_API_KEY,
-                    base_url=settings.OPENAI_BASE_URL
+                    base_url=settings.OPENAI_BASE_URL,
+                    model="nex-agi/deepseek-v3.1-nex-n1:free",
+                    temperature=0.1,
+                    max_tokens=1000
                 )
             except ImportError:
-                raise ImportError("OpenAI library not installed. Install with: pip install openai")
+                raise ImportError("LangChain OpenAI library not installed. Install with: pip install langchain-openai")
         elif self.provider == "anthropic":
             try:
-                from anthropic import Anthropic
-                self.client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+                from langchain_anthropic import ChatAnthropic
+                self.client = ChatAnthropic(
+                    api_key=settings.ANTHROPIC_API_KEY,
+                    model="claude-3-sonnet-20240229",
+                    temperature=0.1,
+                    max_tokens=1000
+                )
             except ImportError:
-                raise ImportError("Anthropic library not installed. Install with: pip install anthropic")
+                raise ImportError("LangChain Anthropic library not installed. Install with: pip install langchain-anthropic")
         elif self.provider == "google":
             try:
-                import google.generativeai as genai
-                genai.configure(api_key=settings.GOOGLE_API_KEY)
-                self.client = genai.GenerativeModel('gemini-1.5-flash')  # Using a common model
+                from langchain_google_genai import ChatGoogleGenerativeAI
+                self.client = ChatGoogleGenerativeAI(
+                    api_key=settings.GOOGLE_API_KEY,
+                    model="gemini-1.5-flash",
+                    temperature=0.1,
+                    max_tokens=1000
+                )
             except ImportError:
-                raise ImportError("Google Generative AI library not installed. Install with: pip install google-generativeai")
+                raise ImportError("LangChain Google GenAI library not installed. Install with: pip install langchain-google-genai")
         else:
             raise ValueError(f"Unsupported LLM provider: {self.provider}")
         
@@ -41,31 +54,26 @@ class LLMService:
             return await self._google_generate(prompt, **kwargs)
         
     async def _openai_generate(self, prompt: str, **kwargs) -> str:
-        response = self.client.chat.completions.create(
-            model=kwargs.get("model", "nex-agi/deepseek-v3.1-nex-n1:free"),
-            messages=[
-                {"role": "system", "content": "You are a helpful university assistant."},
-                {"role": "user", "content": f"Question: {prompt}"}
-            ],
-            temperature=kwargs.get("temperature", 0.1),
-            max_tokens=kwargs.get("max_tokens", 1000)
-        )
-        return response.choices[0].message.content
+        messages = [
+            SystemMessage(content="You are a helpful university assistant."),
+            HumanMessage(content=f"Question: {prompt}")
+        ]
+        response = await self.client.ainvoke(messages)
+        return response.content
     
 
     async def _anthropic_generate(self, prompt: str, **kwargs) -> str:
-        message = self.client.messages.create(
-            model=kwargs.get("model", "claude-3-sonnet-20240229"),
-            max_tokens=kwargs.get("max_tokens", 1000),
-            temperature=kwargs.get("temperature", 0.1),
-            system="You are a helpful university assistant.",
-            messages=[{
-                "role": "user",
-                "content": f"Question: {prompt}"
-            }]
-        )
-        return message.content[0].text
+        messages = [
+            SystemMessage(content="You are a helpful university assistant."),
+            HumanMessage(content=f"Question: {prompt}")
+        ]
+        response = await self.client.ainvoke(messages)
+        return response.content
 
     async def _google_generate(self, prompt: str, **kwargs) -> str:
-        response = self.client.generate_content(prompt)
-        return response.text
+        messages = [
+            SystemMessage(content="You are a helpful university assistant."),
+            HumanMessage(content=f"Question: {prompt}")
+        ]
+        response = await self.client.ainvoke(messages)
+        return response.content
