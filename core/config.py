@@ -19,6 +19,10 @@ class Settings(BaseSettings):
     CHROMA_DB_PATH: str = "./data/chroma_db"
     PINECONE_API_KEY: Optional[str] = None
     PINECONE_ENVIRONMENT: Optional[str] = None
+
+    # Cache
+    REDIS_URL: str = "redis://localhost:6379"
+    CACHE_TTL: int = 3600  # 1 hour in seconds
     
     # Embeddings
     EMBEDDING_PROVIDER: str = "local"  # "local" (FREE) or "openai" ($$$)

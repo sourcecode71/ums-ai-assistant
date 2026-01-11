@@ -1,32 +1,60 @@
+version: '3.8'
+
 services:
   web:
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: ums-ai-api
     ports:
       - "8000:8000"
     env_file:
       - .env
     environment:
       - CHROMA_DB_PATH=/app/data/chroma_db
+      - REDIS_URL=redis://redis:6379/0
+      - CHROMA_SERVER_HOST=chroma
+      - CHROMA_SERVER_HTTP_PORT=8000
+      - PYTHONUNBUFFERED=1  # Important for logs
     volumes:
       - ./data:/app/data
+      - ./logs:/app/logs
+      - ./models:/app/models  # For local ML models
+      - .:/app  # For development hot reload
     depends_on:
       chroma:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     restart: unless-stopped
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "python", "-c", "import socket; s=socket.socket(); s.connect(('localhost',8000))"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 10s
+    # Add resource limits for stability
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
 
   chroma:
     image: chromadb/chroma:latest
+    container_name: ums-chromadb
     ports:
       - "8001:8000"
+    environment:
+      - IS_PERSISTENT=TRUE
+      - PERSIST_DIRECTORY=/chroma/chroma
+      - ANONYMIZED_TELEMETRY=FALSE  # Disable telemetry
     volumes:
       - chroma_data:/chroma/chroma
+      - ./data/chroma_backup:/backup  # Optional: backup location
     restart: unless-stopped
     networks:
       - app-network
@@ -35,9 +63,43 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 40s  # Chroma needs more time to start
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+  redis:
+    image: redis:7-alpine
+    container_name: ums-redis-cache
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-""}
+    volumes:
+      - redis_data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf  # Optional config
+    restart: unless-stopped
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 512M
 
 volumes:
   chroma_data:
+    driver: local
+  redis_data:
+    driver: local
 
 networks:
   app-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
