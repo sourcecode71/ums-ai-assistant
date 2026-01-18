@@ -1,10 +1,22 @@
 version: '3.8'
 
+# 1. Define networks FIRST
+networks:
+  app-network:
+    driver: bridge
+
+# 2. Define volumes
+volumes:
+  chroma_data:
+    driver: local
+  redis_data:
+    driver: local
+
+# 3. Define services
 services:
+  # Your FastAPI app
   web:
-    build: 
-      context: .
-      dockerfile: Dockerfile
+    build: .
     container_name: ums-ai-api
     ports:
       - "8000:8000"
@@ -12,94 +24,43 @@ services:
       - .env
     environment:
       - CHROMA_DB_PATH=/app/data/chroma_db
-      - REDIS_URL=redis://redis:6379/0
       - CHROMA_SERVER_HOST=chroma
       - CHROMA_SERVER_HTTP_PORT=8000
-      - PYTHONUNBUFFERED=1  # Important for logs
+      - REDIS_HOST=redis
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
-      - ./models:/app/models  # For local ML models
-      - .:/app  # For development hot reload
     depends_on:
-      chroma:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    restart: unless-stopped
+      - chroma
+      - redis
     networks:
       - app-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
-    # Add resource limits for stability
-    deploy:
-      resources:
-        limits:
-          memory: 2G
-        reservations:
-          memory: 1G
+    restart: unless-stopped
 
+  # ChromaDB
   chroma:
     image: chromadb/chroma:latest
     container_name: ums-chromadb
     ports:
       - "8001:8000"
     environment:
-      - IS_PERSISTENT=TRUE
-      - PERSIST_DIRECTORY=/chroma/chroma
-      - ANONYMIZED_TELEMETRY=FALSE  # Disable telemetry
+      - ALLOW_RESET=TRUE
+      - CHROMA_SERVER_HOST=0.0.0.0
     volumes:
       - chroma_data:/chroma/chroma
-      - ./data/chroma_backup:/backup  # Optional: backup location
-    restart: unless-stopped
     networks:
       - app-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s  # Chroma needs more time to start
-    deploy:
-      resources:
-        limits:
-          memory: 1G
+    restart: unless-stopped
 
+  # Redis
   redis:
-    image: redis:7-alpine
-    container_name: ums-redis-cache
+    image: redis:alpine
+    container_name: ums-redis
     ports:
       - "6379:6379"
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-""}
+    command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
-      - ./redis.conf:/usr/local/etc/redis/redis.conf  # Optional config
-    restart: unless-stopped
     networks:
       - app-network
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-
-volumes:
-  chroma_data:
-    driver: local
-  redis_data:
-    driver: local
-
-networks:
-  app-network:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.20.0.0/16
+    restart: unless-stopped

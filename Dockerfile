@@ -1,34 +1,29 @@
-# Use multi-stage build for smaller image
-FROM python:3.11-slim as builder
-
-WORKDIR /app
-
-# Copy requirements FIRST for better caching
-COPY requirements.txt .
-RUN pip install --user --no-cache-dir -r requirements.txt
-
-# Runtime stage
+# Use official Python image as base
 FROM python:3.11-slim
 
+# Set working directory
 WORKDIR /app
 
-# Copy Python dependencies from builder
-COPY --from=builder /root/.local /root/.local
-ENV PATH=/root/.local/bin:$PATH
+# Copy requirements file if exists
+COPY requirements.txt .
 
-# Install system dependencies ChromaDB needs
-RUN apt-get update && apt-get install -y \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+# Install dependencies SYSTEM-WIDE (not --user)
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Create non-root user
+# Create non-root user and set permissions
 RUN useradd --create-home --shell /bin/bash app && chown -R app:app /app
+
+# Switch to non-root user
 USER app
 
-# Copy application code (after user creation for better security)
+# Verify uvicorn is accessible
+RUN which uvicorn && uvicorn --version
+
+# Copy application code (as non-root user)
 COPY --chown=app:app . .
 
+# Expose port
 EXPOSE 8000
 
-# Use uvicorn for production (better than python main.py)
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Use full path to uvicorn
+CMD ["/usr/local/bin/uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
