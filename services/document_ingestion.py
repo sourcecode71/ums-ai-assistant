@@ -28,23 +28,25 @@ class DocumentIngestionService:
         self.embedding_service = EmbeddingService()  # Local embeddings
         print("✅ Document Ingestion Service initialized with local embeddings")
 
-    async def ingest_scholarship_document(self, file_path: str, source_name: str):
+    async def ingest_document(self, file_path: str, source_name: str, document_type: DocumentType):
         """
-        Ingest a scholarship document into vector database
-        
+        Ingest a document into vector database
+
         Args:
             file_path: Path to PDF/Word/TXT file
             source_name: Name of the document (e.g., "financial_aid_2024")
-            
+            document_type: Type of the document
+
         Returns:
             Number of chunks stored
         """
         print(f"\n📥 Ingesting document: {source_name} from {file_path}")
-        
+        print(f"📚 Document type: {document_type.value}")
+
         if not os.path.exists(file_path):
             print(f"❌ File not found: {file_path}")
             return 0
-        
+
         try:
             # 1. Extract text from file
             text_chunks = self._extract_text_from_file(file_path)
@@ -52,22 +54,22 @@ class DocumentIngestionService:
                 print(f"⚠️ No text extracted from {source_name}")
                 return 0
             print(f"   📄 Extracted {len(text_chunks)} text chunks")
-            
+
             # 2. Create document chunks
             document_chunks = self._create_document_chunks(
-                text_chunks, 
-                document_type=DocumentType.SCHOLARSHIP,
+                text_chunks,
+                document_type=document_type,
                 source=source_name,
                 file_path=file_path
             )
             print(f"   🔧 Created {len(document_chunks)} document chunks")
-            
+
             # 3. Store in vector database
             await self.vector_store.add_documents(document_chunks)
             print(f"✅ Successfully stored {len(document_chunks)} chunks from {source_name}")
-            
+
             return len(document_chunks)
-            
+
         except Exception as e:
             print(f"❌ Error ingesting {source_name}: {str(e)}")
             return 0
@@ -265,7 +267,7 @@ class DocumentIngestionService:
                 file_path = os.path.join(directory_path, filename)
                 source_name = os.path.splitext(filename)[0]
                 
-                chunks = await self.ingest_scholarship_document(file_path, source_name)
+                chunks = await self.ingest_document(file_path, source_name, document_type)
                 total_chunks += chunks
         
         print(f"\n🎉 Directory ingestion complete!")

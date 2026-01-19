@@ -18,18 +18,18 @@ async def ingest_documents(background_tasks: BackgroundTasks):
 async def run_ingestion():
     """
     Background task to execute the document ingestion process.
-    
-    This function handles finding specific documents (like financial aid PDFs)
-    and passing them to the ingestion service.
+
+    This function ingests all documents in the scholarships and admission directories.
     """
     try:
-        # Process Financial Aid PDFs
-        financial_aid_path = "./data/raw_documents/scholarships/financial_aid_ug.pdf"
-        if os.path.exists(financial_aid_path):
-            await ingestion_service.ingest_scholarship_document(financial_aid_path, "financial_aid_ug")
+        # Ingest all documents in the scholarships directory
+        scholarships_dir = "./data/raw_documents/scholarships"
+        await ingestion_service.ingest_directory(scholarships_dir, DocumentType.SCHOLARSHIP)
 
-        # Placeholder: Add other documents as needed
-        
+        # Ingest all documents in the admission directory
+        admission_dir = "./data/raw_documents/admission"
+        await ingestion_service.ingest_directory(admission_dir, DocumentType.ADMISSION)
+
         print("✅ Ingestion completed!")
     except Exception as e:
         # Log any exceptions that occur during ingestion

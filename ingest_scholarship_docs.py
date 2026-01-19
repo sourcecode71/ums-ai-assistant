@@ -11,6 +11,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from services.document_ingestion import DocumentIngestionService
+from models.rag_models import DocumentType
 
 async def main():
     """Main ingestion function"""
@@ -48,9 +49,10 @@ async def main():
         source_name = os.path.splitext(pdf_file)[0]  # Remove .pdf extension
 
         try:
-            chunks_count = await ingestion_service.ingest_scholarship_document(
+            chunks_count = await ingestion_service.ingest_document(
                 file_path=file_path,
-                source_name=source_name
+                source_name=source_name,
+                document_type=DocumentType.SCHOLARSHIP
             )
             total_chunks += chunks_count
         except Exception as e:
