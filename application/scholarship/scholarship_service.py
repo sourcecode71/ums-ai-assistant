@@ -24,7 +24,7 @@ class ScholarshipService:
             return RAGResponse(**cached_response)
 
         # Search for relevant documents
-        search_results = await self.vector_store.search(
+        search_results = await self.vector_store.hybrid_search(
             question,
             document_type=DocumentType.SCHOLARSHIP,
             limit=5
