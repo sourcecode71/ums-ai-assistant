@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from typing import Dict, Any
-from apps.scholarship.service import ScholarshipService
-from schemas import ChatRequest, ChatResponse, EligibilityRequest, EligibilityResponse
+from application.scholarship.scholarship_service import ScholarshipService
+from domain import ChatRequest, ChatResponse, EligibilityRequest, EligibilityResponse
 
 router = APIRouter()
 scholarship_service = ScholarshipService()

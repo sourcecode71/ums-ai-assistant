@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Optional
-from models.rag_models import DocumentType
-from services.llm_service import LLMService
-from services.vector_store_service import VectorStoreService
+from domain import DocumentType
+from infrastructure.llm_service import LLMService
+from infrastructure.vector_store_service import VectorStoreService
 
 
 class FAQAgent:

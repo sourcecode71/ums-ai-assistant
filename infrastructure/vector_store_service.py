@@ -1,7 +1,7 @@
 import chromadb
 from typing import List, Optional
-from models.rag_models import DocumentChunk, SearchResult, DocumentType
-from services.embedding_service import EmbeddingService
+from domain import DocumentChunk, SearchResult, DocumentType
+from infrastructure.embedding_service import EmbeddingService
 from core.config import settings
 
 class VectorStoreService:

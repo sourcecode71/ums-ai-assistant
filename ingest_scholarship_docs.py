@@ -10,8 +10,8 @@ import sys
 # Add project root to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from services.document_ingestion import DocumentIngestionService
-from models.rag_models import DocumentType
+from infrastructure.document_ingestion import DocumentIngestionService
+from domain import DocumentType
 
 async def main():
     """Main ingestion function"""

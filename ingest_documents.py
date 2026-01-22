@@ -6,8 +6,8 @@ Run this once to populate your vector database
 
 import asyncio
 import os
-from services.document_ingestion import DocumentIngestionService
-from models.rag_models import DocumentType
+from infrastructure.document_ingestion import DocumentIngestionService
+from domain import DocumentType
 
 async def main():
     ingestion_service = DocumentIngestionService()

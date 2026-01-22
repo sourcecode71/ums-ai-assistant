@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, BackgroundTasks
-from services.document_ingestion import DocumentIngestionService
-from models.rag_models import DocumentType
+from infrastructure.document_ingestion import DocumentIngestionService
+from domain import DocumentType
 import os
 
 # Initialize the API router for admin routes

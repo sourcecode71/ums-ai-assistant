@@ -1,5 +1,5 @@
 import asyncio
-from services.vector_store_service import VectorStoreService
+from infrastructure.vector_store_service import VectorStoreService
 
 async def check_storage():
     vector_store = VectorStoreService()

@@ -3,9 +3,9 @@ import hashlib
 from typing import List
 import warnings
 
-from models.rag_models import DocumentChunk, DocumentType
-from services.vector_store_service import VectorStoreService
-from services.embedding_service import EmbeddingService  # Local embeddings!
+from domain import DocumentChunk, DocumentType
+from infrastructure.vector_store_service import VectorStoreService
+from infrastructure.embedding_service import EmbeddingService  # Local embeddings!
 
 try:
     import fitz

@@ -2,8 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from core.config import settings
-from apps.scholarship.routes import router as scholarship_router
-from apps.admin.routes import router as admin_router
+from presentation.scholarship.routes import router as scholarship_router
+from presentation.admin.routes import router as admin_router
 
 app = FastAPI(
     title="UMS AI Assistant",

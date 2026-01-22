@@ -1,13 +1,13 @@
 from typing import List, Dict, Any, TYPE_CHECKING
-from models.rag_models import RAGResponse, DocumentType
-from services.llm_service import LLMService
-from services.vector_store_service import VectorStoreService
-from services.cache_service import CacheService
-from apps.scholarship.prompts.scholarship_qa import SCHOLARSHIP_QA_PROMPT
-from apps.scholarship.prompts.eligibility_check import ELIGIBILITY_CHECK_PROMPT
+from domain import RAGResponse, DocumentType
+from infrastructure.llm_service import LLMService
+from infrastructure.vector_store_service import VectorStoreService
+from infrastructure.cache_service import CacheService
+from application.scholarship.prompts.scholarship_qa import SCHOLARSHIP_QA_PROMPT
+from application.scholarship.prompts.eligibility_check import ELIGIBILITY_CHECK_PROMPT
 
 if TYPE_CHECKING:
-    from services.llm_service import LLMService
+    from infrastructure.llm_service import LLMService
 
 class ScholarshipService:
     def __init__(self):
