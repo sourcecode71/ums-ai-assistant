@@ -3,12 +3,13 @@ pydantic-settings
 uvicorn[standard]
 chromadb
 openai
-pypdf
-PyPDF2
 PyMuPDF
+PyPDF2
+python-docx
 sentence-transformers
 langchain-core
 langchain-openai
 langchain-anthropic
 langchain-google-genai
 redis
+numpy
